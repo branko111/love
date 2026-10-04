@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1677ff">
+<title>love.s111.com — P2P</title>
+<style>
+:root{
+  --blue:#1677ff;--red:#ef3340;--green:#8fd19e;--darkgreen:#18844a;
+  --orange:#ffc36b;--darkorange:#ee8a16;--bg:#f4f7fb;--card:#fff;
+  --text:#172033;--muted:#6d7890;--shadow:0 10px 30px rgba(18,35,66,.10)
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:var(--bg)}
+body{padding-bottom:24px}
+header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid #e7ebf2}
+.nav{max-width:1180px;margin:auto;padding:12px 16px;display:flex;align-items:center;gap:10px}
+.brand{font-weight:800;letter-spacing:.3px;margin-right:auto;color:#111c31}
+.brand span{color:var(--blue)}
+.inputs{display:flex;align-items:center;gap:8px;flex:1;max-width:650px}
+.field-wrap{position:relative;flex:1}
+input{width:100%;height:46px;border:1px solid #d6dce7;border-radius:13px;padding:0 13px;font-size:15px;outline:none;background:#fff}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(22,119,255,.12)}
+.hint{font-size:11px;color:var(--muted);position:absolute;left:12px;top:49px;display:none;z-index:30;white-space:nowrap;background:#172033;color:white;padding:6px 8px;border-radius:7px}
+.field-wrap:hover .hint{display:block}
+.codebox{height:46px;min-width:82px;border-radius:13px;background:#eef3fa;border:1px solid #dbe2ed;display:flex;align-items:center;justify-content:center;font-weight:800;letter-spacing:2px}
+.codebox small{display:none}
+.circles{max-width:1180px;margin:0 auto;padding:14px 16px 4px;display:flex;justify-content:center;gap:clamp(8px,2vw,20px)}
+.circle-btn{width:76px;height:76px;border-radius:50%;border:3px solid rgba(0,0,0,.07);display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;box-shadow:0 5px 16px rgba(0,0,0,.10);transition:.18s transform,.18s filter}
+.circle-btn:hover{transform:translateY(-2px);filter:brightness(.98)}
+.circle-btn:active{transform:scale(.95)}
+.circle-btn .icon{font-size:30px;line-height:1}
+.circle-btn .tooltip{position:absolute;top:82px;display:none;background:#172033;color:#fff;padding:6px 9px;border-radius:8px;font-size:11px;white-space:nowrap;z-index:15}
+.circle-btn:hover .tooltip{display:block}
+.flag{background:#eef2f7;overflow:hidden}
+.flag img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.selfie{background:#e9eef6}
+.selfie img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:none}
+.selfie .placeholder{font-size:28px}
+#gender{background:var(--blue);color:#fff}
+#age{background:var(--green)}
+#interest{background:var(--orange)}
+#gender.female{background:var(--red)}
+#age.above{background:var(--darkgreen);color:#fff}
+#interest.active{background:var(--darkorange);color:#fff}
+main{max-width:1180px;margin:14px auto 0;padding:0 16px}
+.statusbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px}
+.status{font-size:13px;color:var(--muted);background:#fff;border-radius:12px;padding:9px 12px;box-shadow:var(--shadow)}
+.status b{color:var(--text)}
+#map{height:min(70vh,700px);min-height:420px;border-radius:20px;overflow:hidden;box-shadow:var(--shadow);background:#dfe7ef;position:relative}
+.map-overlay{position:absolute;z-index:5;left:12px;top:12px;background:rgba(255,255,255,.95);padding:9px 12px;border-radius:11px;font-size:12px;box-shadow:0 4px 15px rgba(0,0,0,.12)}
+#map-fallback{display:none;position:absolute;inset:0;align-items:center;justify-content:center;text-align:center;padding:30px;background:linear-gradient(135deg,#eaf0f8,#dce6f2)}
+.dot{width:22px;height:22px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.user-dot{width:27px;height:27px}
+.info-card{position:fixed;z-index:50;width:180px;background:#fff;border-radius:14px;padding:9px;box-shadow:0 12px 40px rgba(0,0,0,.20);display:none}
+.info-card img{width:100%;aspect-ratio:1;border-radius:10px;object-fit:cover;background:#edf1f7}
+.info-name{font-weight:800;font-size:14px;margin-top:6px}
+.info-code{font-size:12px;color:var(--muted);letter-spacing:2px}
+.contact-actions{display:none;gap:6px;margin-top:8px}
+.contact-actions a{flex:1;text-decoration:none;text-align:center;padding:7px;border-radius:8px;background:#edf3ff;color:#1262d6;font-size:11px;font-weight:700}
+.toast{position:fixed;left:50%;bottom:25px;transform:translate(-50%,20px);background:#172033;color:#fff;padding:11px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:100;font-size:14px;box-shadow:0 8px 25px rgba(0,0,0,.22)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.legend{position:absolute;right:12px;top:12px;z-index:5;background:rgba(255,255,255,.95);padding:8px 10px;border-radius:10px;font-size:11px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}.legend .m{background:var(--blue)}.legend .f{background:var(--red)}
+footer{text-align:center;color:#8a94a7;font-size:11px;padding:15px}
+@media(max-width:720px){
+  .nav{flex-wrap:wrap}.brand{width:100%;margin-bottom:2px}
+  .inputs{max-width:none;width:100%}.codebox{min-width:74px}
+  .circles{gap:6px;justify-content:space-between}.circle-btn{width:61px;height:61px}.circle-btn .icon{font-size:24px}.circle-btn .tooltip{top:67px}
+  #map{min-height:480px;height:65vh;border-radius:15px}
+}
+@media(max-width:410px){
+  .circle-btn{width:55px;height:55px}.circle-btn .icon{font-size:22px}.circle-btn .tooltip{top:61px}
+  input{height:42px}.codebox{height:42px}
+}
+</style>
+</head>
+<body>
+<header>
+  <nav class="nav" aria-label="Main navigation">
+    <div class="brand">love<span>.s111</span>.com</div>
+    <div class="inputs">
+      <div class="field-wrap">
+        <input id="nameInput" maxlength="4" minlength="4" placeholder="nick-name" autocomplete="nickname" aria-label="Nick-name">
+        <div class="hint">Your nick-name shall be exactly 4 characters</div>
+      </div>
+      <div id="codeBox" class="codebox" title="This is a random number generated">1234</div>
+      <div class="field-wrap">
+        <input id="phoneInput" inputmode="numeric" maxlength="15" placeholder="phone number" autocomplete="tel-national" aria-label="Phone number">
+      </div>
+    </div>
+  </nav>
+</header>
+
+<section class="circles" aria-label="Profile choices">
+  <button class="circle-btn flag" id="flagBtn" title="Your detected country">
+    <img id="flagImg" alt="Country flag">
+    <span class="icon" id="flagFallback">🌐</span>
+    <span class="tooltip" id="countryTip">Detecting your country…</span>
+  </button>
+  <button class="circle-btn selfie" id="selfieBtn" title="Choose selfie">
+    <img id="selfieImg" alt="Your selfie">
+    <span class="placeholder" id="selfiePlaceholder">🤳</span>
+    <span class="tooltip">Choose your selfie</span>
+  </button>
+  <input id="selfieInput" type="file" accept="image/*" capture="user" hidden>
+  <button class="circle-btn" id="gender" title="Choose your gender">
+    <span class="icon">⚥</span><span class="tooltip">Choose your gender</span>
+  </button>
+  <button class="circle-btn" id="age" title="I am above 35 or below 35">
+    <span class="icon">35+</span><span class="tooltip">I am above 35 or below 35</span>
+  </button>
+  <button class="circle-btn" id="interest" title="Choose your interest: music or music and sport">
+    <span class="icon">🎵</span><span class="tooltip">Choose your interest: music or music and sport</span>
+  </button>
+</section>
+
+<main>
+  <div class="statusbar">
+    <div class="status" id="locationStatus"><b>Location:</b> requesting permission…</div>
+    <div class="status"><b>Range:</b> 50 × 50 km</div>
+  </div>
+  <div id="map">
+    <div class="map-overlay">Your location is centred on the map</div>
+    <div class="legend"><i class="m"></i> men &nbsp; <i class="f"></i> women</div>
+    <div id="map-fallback"><div><strong>Google Map</strong><br><br>Add your Google Maps JavaScript API key to this page to enable the live map.</div></div>
+  </div>
+</main>
+
+<footer>love.s111.com • profile preferences are stored locally on this device</footer>
+<div class="toast" id="toast"></div>
+<div class="info-card" id="infoCard">
+  <img id="infoPhoto" alt="">
+  <div class="info-name" id="infoName"></div>
+  <div class="info-code" id="infoCode"></div>
+  <div class="contact-actions" id="contactActions">
+    <a id="smsLink" href="#">SMS</a><a id="waLink" href="#" target="_blank" rel="noopener">WhatsApp</a>
+  </div>
+</div>
+
+<script>
+const KEY='loveS111ProfileV1';
+const state=Object.assign({
+  nickname:'', code:'1234', phone:'', gender:'male', age:'below35', interest:'music',
+  selfie:'', country:'', lat:null, lng:null
+}, JSON.parse(localStorage.getItem(KEY)||'{}'));
+
+const $=id=>document.getElementById(id);
+const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),2200)}
+function validNick(v){return [...v].length===4}
+function generateCode(){return String(Math.floor(1000+Math.random()*9000))}
+function render(){
+  $('nameInput').value=state.nickname;$('phoneInput').value=state.phone;$('codeBox').textContent=state.code;
+  $('gender').classList.toggle('female',state.gender==='female');
+  $('age').classList.toggle('above',state.age==='above35');
+  $('interest').classList.toggle('active',state.interest==='music_sport');
+  if(state.selfie){$('selfieImg').src=state.selfie;$('selfieImg').style.display='block';$('selfiePlaceholder').style.display='none'}
+}
+$('nameInput').addEventListener('input',e=>{
+  let v=e.target.value.slice(0,4); e.target.value=v; state.nickname=v;
+  if(v.length===4){state.code=generateCode();save();render();toast('Nick-name saved • random number generated')}
+  else {save()}
+});
+$('phoneInput').addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'').slice(0,15);state.phone=e.target.value;save()});
+$('gender').onclick=()=>{state.gender=state.gender==='male'?'female':'male';save();render();toast(state.gender==='female'?'I am female':'I am man');updateMap()};
+$('age').onclick=()=>{state.age=state.age==='below35'?'above35':'below35';save();render();toast(state.age==='above35'?'I am above 35':'I am below 35')};
+$('interest').onclick=()=>{state.interest=state.interest==='music'?'music_sport':'music';save();render();toast('I love music and sport')};
+$('selfieBtn').onclick=()=>$('selfieInput').click();
+$('selfieInput').onchange=e=>{
+ const f=e.target.files?.[0];if(!f)return;
+ const r=new FileReader();r.onload=()=>{state.selfie=r.result;save();render();toast('Selfie saved on this device')};r.readAsDataURL(f)
+};
+
+async function detectCountry(){
+  try{
+    const resp=await fetch('https://ipapi.co/json/'); const d=await resp.json();
+    state.country=d.country_code||'';save();setFlag(state.country,d.country_name||'Detected country');
+  }catch(e){setFlag('', 'Country could not be detected automatically')}
+}
+function setFlag(cc,name){
+ $('countryTip').textContent=name;
+ if(cc){$('flagImg').src='https://flagcdn.com/w160/'+cc.toLowerCase()+'.png';$('flagImg').style.display='block';$('flagFallback').style.display='none'}
+}
+function requestLocation(){
+ if(!navigator.geolocation){$('locationStatus').innerHTML='<b>Location:</b> not supported';return}
+ navigator.geolocation.getCurrentPosition(pos=>{
+   state.lat=pos.coords.latitude;state.lng=pos.coords.longitude;save();
+   $('locationStatus').innerHTML='<b>Location:</b> GPS permission granted';
+   if(window.google?.maps) initMap();
+ },()=>{$('locationStatus').innerHTML='<b>Location:</b> permission not granted'});
+}
+
+let map;
+function initMap(){
+ if(!window.google?.maps)return;
+ const center={lat:state.lat??-33.8688,lng:state.lng??151.2093};
+ map=new google.maps.Map($('map'),{center,zoom:9,streetViewControl:false,mapTypeControl:false,fullscreenControl:true,gestureHandling:'greedy'});
+ const me=new google.maps.Marker({map,position:center,title:'You',icon:{path:google.maps.SymbolPath.CIRCLE,scale:10,fillColor:state.gender==='female'?'#ef3340':'#1677ff',fillOpacity:1,strokeColor:'#fff',strokeWeight:3}});
+ // Static demo points only. Replace with your server/WebSocket presence feed for real users.
+ demoUsers(center);
+}
+function demoUsers(center){
+ if(!map)return;
+ const others=[
+  {lat:center.lat+.035,lng:center.lng+.045,gender:state.gender==='female'?'male':'female',name:'DEMO',code:'2468',phone:''},
+  {lat:center.lat-.045,lng:center.lng-.025,gender:state.gender==='female'?'male':'female',name:'LOVE',code:'7312',phone:''}
+ ];
+ others.forEach(u=>{
+   const m=new google.maps.Marker({map,position:{lat:u.lat,lng:u.lng},icon:{path:google.maps.SymbolPath.CIRCLE,scale:8,fillColor:u.gender==='female'?'#ef3340':'#1677ff',fillOpacity:1,strokeColor:'#fff',strokeWeight:2}});
+   const content='<div style="font-weight:800">'+u.name+'</div><div style="color:#6d7890;letter-spacing:2px">'+u.code+'</div>';
+   const inf=new google.maps.InfoWindow({content});
+   m.addListener('mouseover',()=>inf.open({map,anchor:m}));
+   m.addListener('click',()=>showContact(u));
+ });
+}
+function updateMap(){if(map)initMap()}
+function showContact(u){
+ $('infoCard').style.display='block';$('infoCard').style.left='50%';$('infoCard').style.top='50%';
+ $('infoName').textContent=u.name;$('infoCode').textContent=u.code;
+ $('contactActions').style.display='flex';
+ $('smsLink').href='sms:'+encodeURIComponent(u.phone||'');
+ $('waLink').href='https://wa.me/'+encodeURIComponent((u.phone||'').replace(/\D/g,''));
+ setTimeout(()=>document.addEventListener('click',closeCard,{once:true}),0)
+}
+function closeCard(e){if(!$('infoCard').contains(e.target))$('infoCard').style.display='none'}
+
+render();detectCountry();requestLocation();
+window.initMap=initMap;
+</script>
+
+<!--
+  GOOGLE MAPS SETUP:
+  Replace YOUR_GOOGLE_MAPS_API_KEY below with your Google Maps JavaScript API key.
+  For a production P2P service, use a secure backend/WebSocket/Firebase/Supabase service
+  to publish online users' coordinates and profile data. Do not expose private phone data
+  or accept arbitrary coordinates from untrusted clients.
+-->
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap"></script>
+</body>
+</html>
